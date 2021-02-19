@@ -1,13 +1,15 @@
 package app.saikat.iiLang.ast.statement;
 
 import app.saikat.iiLang.ast.expression.Variable;
+import app.saikat.iiLang.ast.interfaces.CodeLocation;
 import app.saikat.iiLang.ast.interfaces.Expr;
 import app.saikat.iiLang.ast.interfaces.Stmt;
 import app.saikat.iiLang.ast.interfaces.StmtVisitor;
 
-public class Var implements Stmt {
+public class Var extends Stmt {
 
-	public Var(Variable variable, Expr initializer) {
+	public Var(Variable variable, Expr initializer, CodeLocation codeLocation) {
+		super(codeLocation);
 		assert(variable.getResultType().isAssignableFrom(initializer.getResultType()));
 		this.variable = variable;
 		this.initializer = initializer;

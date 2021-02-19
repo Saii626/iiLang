@@ -4,12 +4,11 @@ import java.util.List;
 
 import app.saikat.iiLang.ast.expression.*;
 import app.saikat.iiLang.ast.statement.*;
-import app.saikat.iiLang.parser.Token;
 import app.saikat.iiLang.ast.interfaces.Expr;
 import app.saikat.iiLang.ast.interfaces.ExprVisitor;
 import app.saikat.iiLang.ast.interfaces.Stmt;
 import app.saikat.iiLang.ast.interfaces.StmtVisitor;
-import app.saikat.iiLang.ast.interfaces.Type;
+import app.saikat.iiLang.datatypes.interfaces.Type;
 
 public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 
@@ -43,6 +42,11 @@ public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 	}
 
 	@Override
+	public String visitExpressionStmt(Expression stmt) {
+		return stmt.getExpr().accept(this);
+	}
+
+	@Override
 	public String visitIfStmt(If stmt) {
 		StringBuilder stringBuilder = new StringBuilder("if( ");
 		stringBuilder.append(stmt.getCondition().accept(this));
@@ -59,18 +63,12 @@ public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 
 	@Override
 	public String visitPrintStmt(Print stmt) {
-		StringBuilder stringBuilder = new StringBuilder("print( ");
-		stringBuilder.append(stmt.getExpression().accept(this));
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "print( " + stmt.getExpression().accept(this) + " )";
 	}
 
 	@Override
 	public String visitReturnStmt(Return stmt) {
-		StringBuilder stringBuilder = new StringBuilder("return( ");
-		stringBuilder.append(stmt.getValue().accept(this));
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "return( " + stmt.getValue().accept(this) + " )";
 	}
 
 	@Override
@@ -90,33 +88,21 @@ public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 
 	@Override
 	public String visitWhileStmt(While stmt) {
-		StringBuilder stringBuilder = new StringBuilder("while( ");
-		stringBuilder.append(stmt.getCondition().accept(this));
-		stringBuilder.append(" ");
-		stringBuilder.append(stmt.getBody().accept(this));
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "while( " + stmt.getCondition().accept(this) +
+				" " + stmt.getBody().accept(this) + " )";
 	}
 
 	@Override
 	public String visitAssignExpr(Assign expr) {
-		StringBuilder stringBuilder = new StringBuilder("( = ");
-		stringBuilder.append(expr.getName().getLexeme());
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getValue().accept(this));
-		return stringBuilder.toString();
+		return "( = " + expr.getName().getName().getLexeme() +
+				" " + expr.getValue().accept(this);
 	}
 
 	@Override
 	public String visitBinaryExpr(Binary expr) {
-		StringBuilder stringBuilder = new StringBuilder("( ");
-		stringBuilder.append(expr.getOperator().getType().name());
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getLeft().accept(this));
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getRight().accept(this));
-		stringBuilder.append(")");
-		return null;
+		return "( " + expr.getOperator().getType().name() +	" " +
+				expr.getLeft().accept(this) + " " +
+				expr.getRight().accept(this) + ")";
 	}
 
 	@Override
@@ -135,30 +121,19 @@ public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 
 	@Override
 	public String visitCastExpr(Cast expr) {
-		StringBuilder stringBuilder = new StringBuilder("( CAST ");
-		stringBuilder.append(expr.getCastType().typeName());
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getExpr().accept(this));
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "( CAST " + expr.getCastType().typeName() + " " +
+				expr.getExpr().accept(this) + " )";
 	}
 
 	@Override
 	public String visitGetExpr(Get expr) {
-		StringBuilder stringBuilder = new StringBuilder("( GET ");
-		stringBuilder.append(expr.getObject().accept(this));
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getName().getLexeme());
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "( GET " + expr.getObject().accept(this) + " " +
+				expr.getName().getLexeme() + " )";
 	}
 
 	@Override
 	public String visitGroupingExpr(Grouping expr) {
-		StringBuilder stringBuilder = new StringBuilder("( ");
-		stringBuilder.append(expr.getExpression().accept(this));
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "( " + expr.getExpression().accept(this) + " )";
 	}
 
 	@Override
@@ -169,14 +144,14 @@ public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 	@Override
 	public String visitLambdaExpr(Lambda expr) {
 		StringBuilder stringBuilder = new StringBuilder("( LAMBDA ( ");
-		List<Token> params = expr.getParams();
-		List<Type> types = expr.getFunctionType().getParamTypes();
+		List<Variable> params = expr.getParams();
+		List<Type> types = expr.getLambdaType().getParamTypes();
 
 		for(int i=0; i < params.size(); i++) {
 			stringBuilder.append("(");
 			stringBuilder.append(types.get(i));
 			stringBuilder.append(" ");
-			stringBuilder.append(params.get(i).getLexeme());
+			stringBuilder.append(params.get(i).getName().getLexeme());
 			stringBuilder.append(")");
 		}
 		stringBuilder.append(" )");
@@ -186,32 +161,20 @@ public class AstPrinter implements ExprVisitor<String>, StmtVisitor<String> {
 
 	@Override
 	public String visitLogicalExpr(Logical expr) {
-		StringBuilder stringBuilder = new StringBuilder("( ");
-		stringBuilder.append(expr.getOperator().getType().name());
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getLeft().accept(this));
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getRight().accept(this));
-		stringBuilder.append(" )");
-		return null;
+		return "( " + expr.getOperator().getType().name() + " " +
+				expr.getLeft().accept(this) + " " +
+				expr.getRight().accept(this) + " )";
 	}
 
 	@Override
 	public String visitSetExpr(Set expr) {
-		StringBuilder stringBuilder = new StringBuilder("( SET ");
-		stringBuilder.append(expr.getObject().accept(this));
-		stringBuilder.append(" ");
-		stringBuilder.append(expr.getValue().accept(this));
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "( SET " + expr.getObject().accept(this) + " " +
+				expr.getValue().accept(this) + " )";
 	}
 
 	@Override
 	public String visitSuperExpr(Super expr) {
-		StringBuilder stringBuilder = new StringBuilder("( SUPER ");
-		stringBuilder.append(expr.getField().getLexeme());
-		stringBuilder.append(" )");
-		return stringBuilder.toString();
+		return "( SUPER " + expr.getField().getLexeme() + " )";
 	}
 
 	@Override

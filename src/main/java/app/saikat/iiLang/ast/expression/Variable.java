@@ -1,14 +1,14 @@
 package app.saikat.iiLang.ast.expression;
 
-import app.saikat.iiLang.parser.Token;
+import app.saikat.iiLang.datatypes.interfaces.Type;
 import app.saikat.iiLang.ast.interfaces.*;
 
 public class Variable extends Expr {
 
-	final Token name;
+	private final String name;
 
-	public Variable(Token name, Type resultType) {
-		super(resultType);
+	public Variable(String name, Type resultType, CodeLocation codeLocation) {
+		super(resultType, codeLocation);
 		this.name = name;
 	}
 
@@ -17,7 +17,7 @@ public class Variable extends Expr {
 		return visitor.visitVariableExpr(this);
 	}
 
-	public Token getName() {
+	public String getName() {
 		return name;
 	}
 }

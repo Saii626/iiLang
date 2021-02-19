@@ -2,16 +2,16 @@ package app.saikat.iiLang.ast.expression;
 
 import java.util.List;
 
-import app.saikat.iiLang.ast.datatypes.FunctionType;
 import app.saikat.iiLang.ast.interfaces.*;
 
 public class Call extends Expr {
 
-	final Expr callee;
-	final List<Expr> arguments;
+	private final Expr callee;
+	private final List<Expr> arguments;
 
-	public Call(Expr callee, List<Expr> arguments) {
-		super(((FunctionType)callee.getResultType()).getReturnType());
+	public Call(Expr callee, List<Expr> arguments, CodeLocation codeLocation) {
+		super(callee.getResultType().getFields().get("call"), codeLocation);
+		assert (callee.getResultType().getFields().containsKey("call"));
 		this.callee = callee;
 		this.arguments = arguments;
 	}

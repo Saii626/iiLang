@@ -1,15 +1,15 @@
 package app.saikat.iiLang.ast.expression;
 
-import app.saikat.iiLang.parser.Token;
+import app.saikat.iiLang.datatypes.interfaces.Type;
 import app.saikat.iiLang.ast.interfaces.*;
 
 public class Get extends Expr {
 
-	final Expr object;
-	final Token name;
+	private final Expr object;
+	private final String name;
 
-	public Get(Expr object, Token name, Type resultType) {
-		super(resultType);
+	public Get(Expr object, String name, Type resultType, CodeLocation codeLocation) {
+		super(resultType, codeLocation);
 		this.object = object;
 		this.name = name;
 	}
@@ -23,7 +23,7 @@ public class Get extends Expr {
 		return object;
 	}
 
-	public Token getName() {
+	public String getName() {
 		return name;
 	}
 }

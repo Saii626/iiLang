@@ -1,4 +1,3 @@
-//> Scanning lox-class
 package app.saikat.iiLang;
 
 import java.io.BufferedReader;
@@ -24,7 +23,7 @@ public class ii {
 	static boolean hadRuntimeError = false;
 
 	public static void main(String[] args) throws IOException {
-		
+
 		Options options = new Options();
 		for (CmdlineOptions opt : CmdlineOptions.values()) {
 			options.addOption(opt.getOption());

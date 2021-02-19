@@ -1,12 +1,13 @@
 package app.saikat.iiLang.ast.expression;
 import app.saikat.iiLang.ast.interfaces.*;
+import app.saikat.iiLang.datatypes.interfaces.Type;
 
 public class Literal extends Expr {
 
-	final Object value;
+	private final Object value;
 
-	public Literal(Object value, Type literalType) {
-		super(literalType);
+	public Literal(Object value, Type literalType, CodeLocation codeLocation) {
+		super(literalType, codeLocation);
 		this.value = value;
 	}
 

@@ -1,13 +1,14 @@
 package app.saikat.iiLang.ast.statement;
 
+import app.saikat.iiLang.ast.interfaces.CodeLocation;
 import app.saikat.iiLang.ast.interfaces.Expr;
 import app.saikat.iiLang.ast.interfaces.Stmt;
 import app.saikat.iiLang.ast.interfaces.StmtVisitor;
-import app.saikat.iiLang.parser.Token;
 
-public class Return implements Stmt {
+public class Return extends Stmt {
 
-	public Return(Token keyword, Expr value) {
+	public Return(Expr value, CodeLocation codeLocation) {
+		super(codeLocation);
 		this.value = value;
 	}
 

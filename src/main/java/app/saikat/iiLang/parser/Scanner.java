@@ -2,63 +2,20 @@
 package app.saikat.iiLang.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import app.saikat.iiLang.ast.interfaces.CodeLocation;
 import app.saikat.iiLang.interfaces.CmdlineOptions;
-import app.saikat.iiLang.interfaces.ErrorReporter;
+import app.saikat.iiLang.interfaces.Reporter;
+import app.saikat.iiLang.parser.interfaces.TokenType;
 
-import static app.saikat.iiLang.parser.TokenType.*;
+import static app.saikat.iiLang.parser.interfaces.TokenType.*;
 
 public class Scanner {
-	// keyword-map
-	private static final Map<String, TokenType> keywords;
-
-	// Populate keywords
-	static {
-		keywords = new HashMap<>();
-
-		// Class
-		keywords.put("class", CLASS);
-		keywords.put("super", SUPER);
-		keywords.put("this", THIS);
-
-		// Function
-		keywords.put("fn", FUN);
-		keywords.put("return", RETURN);
-
-		// Datatypes
-		keywords.put("i8", INT_8_K);
-		keywords.put("i16", INT_16_K);
-		keywords.put("i32", INT_32_K);
-		keywords.put("i64", INT_64_K);
-		keywords.put("f32", FLOAT_32_K);
-		keywords.put("f64", FLOAT_64_K);
-		keywords.put("bool", BOOL_K);
-		keywords.put("string", STRING_K);
-
-		// Control flow
-		keywords.put("if", IF);
-		keywords.put("else", ELSE);
-		keywords.put("while", WHILE);
-
-		// Special values
-		keywords.put("false", FALSE);
-		keywords.put("true", TRUE);
-		keywords.put("nil", NIL);
-
-		// Relational operators
-		keywords.put("or", OR);
-		keywords.put("and", AND);
-
-		// Print
-		keywords.put("print", PRINT);
-	}
 
 	// Source
 	private final String source;
-	private final ErrorReporter errorReporter;
+	private final Reporter reporter;
 
 	// Final output
 	private final List<Token> tokens = new ArrayList<>();
@@ -68,9 +25,9 @@ public class Scanner {
 	private int current = 0;
 	private int line = 1;
 
-	public Scanner(String source, ErrorReporter errorReporter) {
+	public Scanner(String source, Reporter reporter) {
 		this.source = source;
-		this.errorReporter = errorReporter;
+		this.reporter = reporter;
 	}
 
 	public List<Token> scanTokens() {
@@ -80,7 +37,7 @@ public class Scanner {
 			scanToken();
 		}
 
-		tokens.add(new Token(EOF, "", null, line));
+		tokens.add(new Token(EOF, "", null, new CodeLocation(line, current+1)));
 
 		if (CmdlineOptions.selectedOptions.contains(CmdlineOptions.DUMP_TOKENS)) {
 			System.out.println("After scanning:");
@@ -144,7 +101,7 @@ public class Scanner {
 				} else if (isAlpha(c)) {
 					identifier();
 				} else {
-					errorReporter.reportError("Unexpected character " + c, this.line, this.current);
+					reporter.reportError("Unexpected character " + c, this.line, this.current);
 				}
 				break;
 		}
@@ -155,7 +112,7 @@ public class Scanner {
 		while (isAlphaNumeric(peek())) advance();
 
 		String text = source.substring(start, current);
-		TokenType type = keywords.get(text);
+		TokenType type = TokenType.parseKeywordOrDataType(text);
 		if (type == null) type = IDENTIFIER;
 		addToken(type);
 	}
@@ -172,7 +129,13 @@ public class Scanner {
 			while (isDigit(peek())) advance();
 			addToken(FLOAT_64, Double.parseDouble(source.substring(start, current)));
 		} else {
-			addToken(INT_64, Integer.parseInt(source.substring(start, current)));
+			long i = Long.parseLong(source.substring(start, current));
+			TokenType smallestPossibleType;
+			if (Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE) smallestPossibleType = INT_8;
+			else if (Short.MIN_VALUE <= i && i <= Short.MAX_VALUE) smallestPossibleType = INT_16;
+			else if (Integer.MIN_VALUE <= i && i <= Integer.MAX_VALUE) smallestPossibleType = INT_32;
+			else smallestPossibleType = INT_64;
+			addToken(smallestPossibleType, i);
 		}
 	}
 
@@ -184,7 +147,7 @@ public class Scanner {
 		}
 
 		if (isAtEnd()) {
-			errorReporter.reportError("Unterminated string", line, current);
+			reporter.reportError("Unterminated string", line, current);
 			return;
 		}
 
@@ -245,6 +208,6 @@ public class Scanner {
 
 	private void addToken(TokenType type, Object literal) {
 		String text = source.substring(start, current);
-		tokens.add(new Token(type, text, literal, line));
+		tokens.add(new Token(type, text, literal, new CodeLocation(line, start)));
 	}
 }

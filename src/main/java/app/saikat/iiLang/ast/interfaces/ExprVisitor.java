@@ -10,7 +10,9 @@ public interface ExprVisitor<R> {
 
 	R visitCallExpr(Call expr);
 
-	R visitCastExpr(Cast expr);
+	R visitBlockExpr(Block expr);
+
+	R visitIfExpr(If expr);
 
 	R visitGetExpr(Get expr);
 
@@ -26,7 +28,7 @@ public interface ExprVisitor<R> {
 
 	R visitSuperExpr(Super expr);
 
-	R visitThisExpr(This expr);
+	//R visitThisExpr(This expr);
 
 	R visitUnaryExpr(Unary expr);
 

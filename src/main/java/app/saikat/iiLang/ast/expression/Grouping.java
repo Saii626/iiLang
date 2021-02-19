@@ -3,10 +3,10 @@ import app.saikat.iiLang.ast.interfaces.*;
 
 public class Grouping extends Expr {
 
-	final Expr expression;
+	private final Expr expression;
 
-	public Grouping(Expr expression) {
-		super(expression.getResultType());
+	public Grouping(Expr expression, CodeLocation codeLocation) {
+		super(expression.getResultType(), codeLocation);
 		this.expression = expression;
 	}
 

@@ -1,18 +1,17 @@
 package app.saikat.iiLang.ast.expression;
 
-import app.saikat.iiLang.parser.Token;
 import app.saikat.iiLang.ast.interfaces.*;
 
 public class Set extends Expr {
 
-	final Expr object;
-	final Token name;
-	final Expr value;
+	private final Expr object;
+	private final Variable field;
+	private final Expr value;
 
-	public Set(Expr object, Token name, Expr value) {
-		super(value.getResultType());
+	public Set(Expr object, Variable field, Expr value, CodeLocation codeLocation) {
+		super(value.getResultType(), codeLocation);
 		this.object = object;
-		this.name = name;
+		this.field = field;
 		this.value = value;
 	}
 
@@ -25,11 +24,11 @@ public class Set extends Expr {
 		return object;
 	}
 
-	public Token getName() {
-		return name;
-	}
-
 	public Expr getValue() {
 		return value;
+	}
+
+	public Variable getField() {
+		return field;
 	}
 }

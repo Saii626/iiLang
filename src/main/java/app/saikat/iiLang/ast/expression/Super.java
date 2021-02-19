@@ -1,16 +1,14 @@
 package app.saikat.iiLang.ast.expression;
 
-import app.saikat.iiLang.parser.Token;
+import app.saikat.iiLang.datatypes.interfaces.Type;
 import app.saikat.iiLang.ast.interfaces.*;
 
 public class Super extends Expr {
 
-	final Token keyword;
-	final Token field;
+	private final String field;
 
-	public Super(Token keyword, Token field, Type resultType) {
-		super(resultType);
-		this.keyword = keyword;
+	public Super(String field, Type resultType, CodeLocation codeLocation) {
+		super(resultType, codeLocation);
 		this.field = field;
 	}
 
@@ -19,11 +17,7 @@ public class Super extends Expr {
 		return visitor.visitSuperExpr(this);
 	}
 
-	public Token getKeyword() {
-		return keyword;
-	}
-
-	public Token getField() {
+	public String getField() {
 		return field;
 	}
 }

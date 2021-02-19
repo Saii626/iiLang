@@ -1,20 +1,38 @@
 package app.saikat.iiLang.ast.expression;
 
 import app.saikat.iiLang.parser.Token;
-import app.saikat.iiLang.ast.datatypes.Primitive;
+import app.saikat.iiLang.datatypes.SystemDefinedTypes.Primitive;
 import app.saikat.iiLang.ast.interfaces.*;
+import app.saikat.iiLang.parser.interfaces.TokenType;
 
 public class Logical extends Expr {
 
-	final Expr left;
-	final Token operator;
-	final Expr right;
+	public enum LogicalOperator {
+		AND, OR,;
 
-	public Logical(Expr left, Token operator, Expr right) {
-		super(Primitive.BOOL);
+		private static LogicalOperator getOperatorFromTokenType(TokenType tokenType) {
+			assert (TokenType.LOGICAL_OPERATORS.contains(tokenType));
+			return switch (tokenType) {
+				case AND -> LogicalOperator.AND;
+				case OR -> LogicalOperator.OR;
+				default -> throw new RuntimeException("Cannot reach because of assert");
+			};
+		}
+	}
+
+	private final Expr left;
+	private final LogicalOperator operator;
+	private final Expr right;
+
+	public Logical(Expr left, TokenType type, Expr right, CodeLocation codeLocation) {
+		super(Primitive.BOOL_T, codeLocation);
 		this.left = left;
-		this.operator = operator;
+		this.operator = LogicalOperator.getOperatorFromTokenType(type);
 		this.right = right;
+	}
+
+	public Logical(Expr left, Token token, Expr right, CodeLocation codeLocation) {
+		this(left, token.type(), right, codeLocation);
 	}
 
 	@Override
@@ -26,7 +44,7 @@ public class Logical extends Expr {
 		return left;
 	}
 
-	public Token getOperator() {
+	public LogicalOperator getOperator() {
 		return operator;
 	}
 
